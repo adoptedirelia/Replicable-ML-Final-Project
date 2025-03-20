@@ -1,16 +1,58 @@
 """
-Code for using the classic decision tree algorithm.
+Code for using the classic decision tree algorithm. Keep all the hyperparameters as default.
+The dataset used is the 'Invistico_Airline.csv' dataset from https://www.kaggle.com/datasets/yakhyojon/customer-satisfaction-in-airline/data
+We would binary classify whether a customer will be satisfied or not based on the features 'Class','Seat comfort','Food and drink','Cleanliness'.
 """
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import confusion_matrix,accuracy_score
 
-dataset_path = "./dataset/loan.csv"
-def main(dataset_path):
+dataset_path = './dataset/Invistico_Airline.csv'
+random_seed = 42
+
+def preProcess(df):
+    """
+    Categories the columns of the dataset.
+    """
+    result = df
+    for col in result.columns[:-1]:
+        result[col] = LabelEncoder().fit_transform(result[col])
+    return result
+
+def main(dataset_path,seed):
     
     ### Load the dataset
     df = pd.read_csv(dataset_path)
-    df_test = df[['gender', 'education_level', 'age', 'credit_score', 'loan_status']].tail(30).reset_index(drop=True)
-
     
+    ### For ease of implementation, we will only use four features for the label ''satisfaction''
+    df = df[['Class','Seat comfort','Food and drink','Cleanliness','satisfaction']]
+
+    ### Preprocess the dataset
+    df_final = preProcess(df)
+    
+    ### train-test split
+    X = df_final.drop('satisfaction', axis=1)
+    y = df_final['satisfaction']
+    X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=seed)
+    print("Train set size:", X_train.shape[0], "Test set size:", X_test.shape[0])
+    
+    ### Define and train a tree model
+    clf = DecisionTreeClassifier()
+    clf = clf.fit(X_train, y_train)
+
+    # Prediction
+    y_pred = clf.predict(X_test)
+    
+    # Evaluation
+    conf_matrix = confusion_matrix(y_test, y_pred)
+    print("Confusion Matrix:", conf_matrix)
+    acc = accuracy_score(y_test, y_pred)
+    print("Accuracy:", acc)
+
+if __name__=="__main__":
+    main(dataset_path,random_seed)
