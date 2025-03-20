@@ -1,7 +1,7 @@
 """
 Code for using the classic decision tree algorithm. Keep all the hyperparameters as default.
 The dataset used is the 'Invistico_Airline.csv' dataset from https://www.kaggle.com/datasets/yakhyojon/customer-satisfaction-in-airline/data
-We would binary classify whether a customer will be satisfied or not based on the features 'Class','Seat comfort','Food and drink','Cleanliness'.
+We would binary classify whether a customer will be satisfied or not based on a list of selected features.
 """
 import numpy as np
 import pandas as pd
@@ -11,9 +11,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import confusion_matrix,accuracy_score
-
-dataset_path = './dataset/Invistico_Airline.csv'
-random_seed = 42
+import config
 
 def preProcess(df):
     """
@@ -29,8 +27,8 @@ def main(dataset_path,seed):
     ### Load the dataset
     df = pd.read_csv(dataset_path)
     
-    ### For ease of implementation, we will only use four features for the label ''satisfaction''
-    df = df[['Class','Seat comfort','Food and drink','Cleanliness','satisfaction']]
+    ### For ease of implementation, we will only use a few features
+    df = df[config.selected_features]
 
     ### Preprocess the dataset
     df_final = preProcess(df)
@@ -52,7 +50,7 @@ def main(dataset_path,seed):
     conf_matrix = confusion_matrix(y_test, y_pred)
     print("Confusion Matrix:", conf_matrix)
     acc = accuracy_score(y_test, y_pred)
-    print("Accuracy:", acc)
+    print("Accuracy:", np.round(acc,2)) # baseline acc=0.82
 
 if __name__=="__main__":
-    main(dataset_path,random_seed)
+    main(config.dataset_path,config.random_seed)
