@@ -2,10 +2,10 @@
 Implement a *replicable* version of decision tree model.
 
 ## 1. Task
-Build a Classification Decision Tree to determine if a loan will be approved or not based on features such as age, gender, occupation, education level, marital status, income, and credit score.
+Build a Classification Decision Tree to determine whether a customer will be satisfied or not with an airline based on a list of selected features.
 
 ## 2. Dataset
-We use the simple loan dataset from https://www.kaggle.com/datasets/sujithmandala/simple-loan-classification-dataset/ 
+We use the dataset from https://www.kaggle.com/datasets/yakhyojon/customer-satisfaction-in-airline/data
 
 ## 3. Roadmap
 *Refer Algorithm 10 in paper "Stability is Stable: Connections between Replicability, Privacy, and
