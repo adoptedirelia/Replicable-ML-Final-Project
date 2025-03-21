@@ -11,12 +11,12 @@ We use the dataset from https://www.kaggle.com/datasets/yakhyojon/customer-satis
 *Refer Algorithm 10 in paper "Stability is Stable: Connections between Replicability, Privacy, and
 Adaptive Generalization"*
 ### 3.1 Generate input:
-S1: define parameters.  
+S1: Define parameters.  
 S2: Generate finite class H (save a set of randomly initialized decision trees?)  
 
 ### 3.2 Algorithm 10
-S1: sample a subset from the dataset, and compute the loss of each model in 3.1-S2. Note that the default loss function of decision tree in sklearn is 'gini'.
-S2: sample a value from the interval [OPT, OPT+alphs/2]. Note that *OPT* loss in decision tree is 0.
+S1: Sample a subset from the dataset, and compute the loss of each model in 3.1-S2. Note that the default loss function of decision tree in sklearn is 'gini'.
+S2: Sample a value from the interval [OPT, OPT+alphs/2]. Note that *OPT* loss in decision tree is 0.
 S3: Select random threshold v.
 S4. Randomly order all H.
 
