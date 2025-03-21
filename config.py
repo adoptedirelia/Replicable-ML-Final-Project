@@ -4,15 +4,19 @@ Config the global variables
 import numpy as np 
 
 dataset_path = './dataset/Invistico_Airline.csv'
+model_path = './models/'
 random_seed = 42
-selected_features = ['Class','Seat comfort','Food and drink','Cleanliness','satisfaction']
+# note that last column is the label column
+selected_features = ['Class','Seat comfort','Food and drink','Cleanliness','satisfaction'] 
 
 # Parameters for replicable algorithm
 rho = 0.95 # Replicability
 alpha = 0.05 # Accuracy
 beta = 0.2 # Confidence
 num_H = 10 # Number of hypotheses (model weights)
+m=100 # Number of samples
 m_up_bound = (np.log(num_H)**2*np.log(1.0/rho) + rho**2*np.log(1.0/beta))/(alpha**2*rho**4)
+tau=0.1 # Replicability bucket size
 tau_up_bound = (alpha*rho)/(np.log(num_H))
 
 
