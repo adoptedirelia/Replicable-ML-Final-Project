@@ -32,7 +32,6 @@ def main(dataset_path,seed):
 
     ### Preprocess the dataset
     df_final = preProcess(df)
-    
     ### train-test split
     X = df_final.drop('satisfaction', axis=1)
     y = df_final['satisfaction']
