@@ -93,3 +93,4 @@ if __name__ == '__main__':
     print(a)
     for t in H:
         print(t.get_params())
+    a = 1 if a > 0.5 else 0
