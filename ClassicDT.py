@@ -9,10 +9,15 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import confusion_matrix,accuracy_score
+from sklearn.tree import DecisionTreeClassifier,plot_tree
+from sklearn.metrics import confusion_matrix,accuracy_score,classification_report
 import config
 
+def plot_decision_tree(model, feature_names, class_names):
+    tree = plot_tree(model, feature_names = feature_names, class_names = class_names,
+                     rounded = True, proportion = True, precision = 2, filled = True, fontsize=10)
+    
+    return tree
 def preProcess(df):
     """
     Categories the columns of the dataset.
@@ -39,17 +44,23 @@ def main(dataset_path,seed):
     print("Train set size:", X_train.shape[0], "Test set size:", X_test.shape[0])
     
     ### Define and train a tree model
-    clf = DecisionTreeClassifier()
+    clf = DecisionTreeClassifier(max_depth=3,criterion='gini',random_state=seed)
     clf = clf.fit(X_train, y_train)
 
     # Prediction
     y_pred = clf.predict(X_test)
-    
+
     # Evaluation
     conf_matrix = confusion_matrix(y_test, y_pred)
     print("Confusion Matrix:", conf_matrix)
     acc = accuracy_score(y_test, y_pred)
     print("Accuracy:", np.round(acc,2)) # baseline acc=0.82
+    print("Classification Report:", classification_report(y_test, y_pred))
+
+    plt.figure(figsize=(30,10))
+    plot_decision_tree(clf, X.columns, clf.classes_)
+    plt.show()
+    
 
 if __name__=="__main__":
     main(config.dataset_path,config.random_seed)
