@@ -1,5 +1,5 @@
 import numpy as np
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.tree import DecisionTreeClassifier, export_text
 from sklearn.metrics import zero_one_loss
 from sklearn.utils import shuffle
 import random
@@ -92,5 +92,5 @@ if __name__ == '__main__':
     a = tree.score(X_test, y_test)
     print(a)
     for t in H:
-        print(t.get_params())
-    a = 1 if a > 0.5 else 0
+        r = export_text(t, feature_names=config.selected_features[:-1])
+        print(r)
