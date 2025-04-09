@@ -85,10 +85,10 @@ def load_dataset(dataset_path,test_size=0.2, random_state=42):
 
 if __name__ == '__main__':
     
-    X_train, X_test, y_train, y_test = load_dataset(config.dataset_path, test_size=0.2, random_state=42)
+    X_train, X_test, y_train, y_test = load_dataset(config.dataset_path, test_size=0.2, random_state=config.random_seed)
 
-    H = build_candidate_trees(X_train, y_train, max_depth=3, num_trees=20, random_state=42)
-    tree = replicable_learner(X_train, y_train, H, random_seed=42)
+    H = build_candidate_trees(X_train, y_train, max_depth=config.max_depth, num_trees=config.num_H, random_state=config.random_seed)
+    tree = replicable_learner(X_train, y_train, H, random_seed=config.random_seed)
     a = tree.score(X_test, y_test)
     print(a)
     for t in H:
