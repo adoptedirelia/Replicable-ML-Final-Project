@@ -42,11 +42,14 @@ def replicable_learner(X_train, y_train, H, random_seed=1234):
 
     errors = {tree: empirical_error(tree, X_train, y_train) for tree in H}
 
-    opt = min(errors.values())
-    v_init = opt + config.tau / 2
-    k = int(((config.alpha/4 - config.tau/2)*2-1)/2) + 1
+    #opt = min(errors.values())
+    opt = 0 # the optimal error we can achieve is zero
+    v_init = opt + config.tau/ 2
+    #k = int(((config.alpha/4 - config.tau/2)*2-1)/2) + 1
+    k  = int(((config.alpha/4 - config.tau/2)-1.5*config.tau)/config.tau) + 1
     v_candidates = [v_init + (2 * i + 1) * config.tau / 2 for i in range(k)]
-    print(v_candidates)
+    print("k:", k,"v max candidates:", np.max(v_candidates), "v min candidates:", np.min(v_candidates))
+    #print(v_candidates)
     v = random.choice(v_candidates)  
 
     H_shuffled = shuffle(H, random_state=random_seed)
