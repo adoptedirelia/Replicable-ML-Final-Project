@@ -11,10 +11,10 @@ random_seed = 42
 selected_features = ['Class','Seat comfort','Food and drink','Cleanliness','satisfaction'] 
 
 # Parameters for replicable algorithm
-rho = 0.1 # Replicability
-alpha = 0.3 # Accuracy 
-beta = 0.01 # Confidence
-num_H = 20 # Number of hypotheses (model weights)
+rho = 0.8 # Replicability
+alpha = 0.6 # Accuracy 
+beta = 0.1 # Confidence
+num_H = 10 # Number of hypotheses (model weights)
 m=100 # Number of samples
 m_up_bound = (np.log(num_H)**2*np.log(1.0/rho) + rho**2*np.log(1.0/beta))/(alpha**2*rho**4)
 

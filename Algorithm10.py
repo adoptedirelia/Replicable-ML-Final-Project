@@ -46,8 +46,8 @@ def replicable_learner(X_train, y_train, H, random_seed=1234):
 
     errors = {tree: empirical_error(tree, X_train, y_train) for tree in H}
 
-    # opt = min(errors.values())
-    opt = 0  # the optimal error we can achieve is zero
+    opt = min(errors.values())
+    #opt = 0  # the optimal error we can achieve is zero
     v_init = opt + config.tau / 2
     # k = int(((config.alpha/4 - config.tau/2)*2-1)/2) + 1
     k = int(((config.alpha/4 - config.tau/2)-1.5*config.tau)/config.tau) + 1
