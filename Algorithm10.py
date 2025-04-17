@@ -48,7 +48,7 @@ def replicable_learner(X_train, y_train, H, random_seed=1234):
 
     opt = min(errors.values())
     #opt = 0  # the optimal error we can achieve is zero
-    v_init = opt + config.tau / 2
+    v_init = np.random.uniform(opt,opt + config.tau / 2)
     # k = int(((config.alpha/4 - config.tau/2)*2-1)/2) + 1
     k = int(((config.alpha/4 - config.tau/2)-1.5*config.tau)/config.tau) + 1
     v_candidates = [v_init + (2 * i + 1) * config.tau / 2 for i in range(k)]
