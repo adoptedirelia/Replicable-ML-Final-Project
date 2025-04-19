@@ -16,17 +16,17 @@ def build_candidate_trees(X_train, y_train, max_depth=3, num_trees=20, random_st
     H = []
 
     for i in tqdm.tqdm(range(num_trees)):
-        df = pd.concat([X_train, y_train], axis=1)  # 合并成一个 DataFrame
-        df_shuffled = df.sample(
-            frac=1, random_state=random_state+i).reset_index(drop=True)
-        temp = df_shuffled.iloc[:int(len(df_shuffled) * 0.7)]
+        # df = pd.concat([X_train, y_train], axis=1)  # 合并成一个 DataFrame
+        # df_shuffled = df.sample(
+        #     frac=1, random_state=random_state+i).reset_index(drop=True)
+        # temp = df_shuffled.iloc[:int(len(df_shuffled) * 0.7)]
 
-        X_train_shuffled = temp.iloc[:, :-1]
-        y_train_shuffled = temp.iloc[:, -1]
+        # X_train_shuffled = temp.iloc[:, :-1]
+        # y_train_shuffled = temp.iloc[:, -1]
 
         tree = DecisionTreeClassifier(
             max_depth=max_depth, random_state=random_state + i, criterion='gini')
-        tree.fit(X_train_shuffled, y_train_shuffled)
+        tree.fit(X_train, y_train)
         # tree.fit(X_train, y_train)
         H.append(tree)
 
@@ -52,8 +52,8 @@ def replicable_learner(X_train, y_train, H, random_seed=1234):
     # k = int(((config.alpha/4 - config.tau/2)*2-1)/2) + 1
     k = int(((config.alpha/4 - config.tau/2)-1.5*config.tau)/config.tau) + 1
     v_candidates = [v_init + (2 * i + 1) * config.tau / 2 for i in range(k)]
-    print("k:", k, "v max candidates:", np.max(v_candidates),
-          "v min candidates:", np.min(v_candidates))
+    # print("k:", k, "v max candidates:", np.max(v_candidates),
+    #       "v min candidates:", np.min(v_candidates))
     # print(v_candidates)
     v = random.choice(v_candidates)
 
@@ -69,9 +69,10 @@ def preProcess(df):
     """
     Categories the columns of the dataset.
     """
-    result = df
-    for col in result.columns[:-1]:
-        result[col] = LabelEncoder().fit_transform(result[col])
+    result = df.copy()
+    for col in result.columns[:]:
+        if result[col].dtype == 'object':
+            result[col] = LabelEncoder().fit_transform(result[col])
     return result
 
 
@@ -97,6 +98,21 @@ def load_dataset(dataset_path, sample_size=None, test_size=0.2, random_state=42)
 
     return X_train, X_test, y_train, y_test
 
+def load_dataset_no_split(dataset_path, sample_size=10000, random_state=42):
+    df = pd.read_csv(dataset_path)
+
+    # For ease of implementation, we will only use a few features
+    df = df[config.selected_features]
+
+    # Preprocess the dataset
+    df_final = preProcess(df)
+    # train-test split
+    X = df_final.drop('satisfaction', axis=1)
+    y = df_final['satisfaction']
+    # X_train, X_test, y_train, y_test = train_test_split(
+    #     X, y, random_state=random_state, test_size=test_size)
+    X, y = shuffle(X, y, random_state=random_state)
+    return X[:sample_size], y[:sample_size]
 
 if __name__ == '__main__':
 
