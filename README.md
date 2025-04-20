@@ -29,5 +29,6 @@ Output the first hypothesis f in the order s.t. err_S(f) < v.
 `./tutorial/`: directory for decision tree model tutorial.  
 `ClassicDT.py`: implements a pipeline to use decision tree model from sklearn.  
 `config.py`: defines the global variable for the repository.  
-`GenModels.py`: generate a set of models as 3.2-S2.
 `utils.py`: defines some utility functions.
+`Algorithm10.py`: Our implementation fo the Algorithm 10 in the paper.
+`Experiment.py`: our experiment codes.
