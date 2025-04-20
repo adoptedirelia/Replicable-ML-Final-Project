@@ -11,17 +11,17 @@ random_seed = 42
 selected_features = ['Class','Seat comfort','Food and drink','Cleanliness','satisfaction'] 
 
 # Parameters for replicable algorithm
-rho = 0.9 # Replicability
+rho = 0.85 # Replicability
 alpha = 0.3 # Accuracy 
 beta = 0.2 # Confidence
 num_H = 10 # Number of hypotheses (model weights)
-m=100 # Number of samples
 m_up_bound = (np.log(num_H)**2*np.log(1.0/rho) + rho**2*np.log(1.0/beta))/(alpha**2*rho**4)
 
 tau_up_bound = (alpha*rho)/(np.log(num_H))
-tau=tau_up_bound*0.0001 # Replicability bucket size
+tau=tau_up_bound*0.1 # Replicability bucket size
 
-
+# the following parameters are not used for the experiment
+m=100 # Number of samples
 
 def print_config_variables():
     """print all the global variables"""
