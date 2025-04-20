@@ -10,26 +10,42 @@ from sklearn.model_selection import train_test_split
 import tqdm
 
 
-def build_candidate_trees(X_train, y_train, max_depth=3, num_trees=20, random_state=42):
+def random_drawsample(X_train, y_train, sample_size, random_state=42):
+    """
+    X_train, y_train: full training set
+    """
+    np.random.seed(random_state)
+    df = pd.concat([X_train, y_train], axis=1)  
+    # random sample a subset of sample_size samples from the full dataset
+    df_shuffled = df.sample(
+        frac=1, random_state=random_state).reset_index(drop=True)
+    temp = df_shuffled.iloc[:sample_size]
 
+    X_train_shuffled = temp.iloc[:, :-1]
+    y_train_shuffled = temp.iloc[:, -1]
+    
+    return X_train_shuffled, y_train_shuffled
+
+def build_candidate_trees(X_train, y_train,sample_size, max_depth=3, num_trees=20, random_state=42):
+
+    """
+    X_train, y_train: full training set
+    """
     np.random.seed(random_state)
     H = []
-
+    errors = []
     for i in tqdm.tqdm(range(num_trees)):
-        # df = pd.concat([X_train, y_train], axis=1)  # 合并成一个 DataFrame
-        # df_shuffled = df.sample(
-        #     frac=1, random_state=random_state+i).reset_index(drop=True)
-        # temp = df_shuffled.iloc[:int(len(df_shuffled) * 0.7)]
 
-        # X_train_shuffled = temp.iloc[:, :-1]
-        # y_train_shuffled = temp.iloc[:, -1]
-
+        X_train_shuffled, y_train_shuffled = random_drawsample(
+            X_train, y_train, sample_size, random_state=random_state+i)
+        
         tree = DecisionTreeClassifier(
-            max_depth=max_depth, random_state=random_state + i, criterion='gini')
-        tree.fit(X_train, y_train)
-        # tree.fit(X_train, y_train)
+            max_depth=max_depth, random_state=random_state, criterion='gini')
+        tree.fit(X_train_shuffled,  y_train_shuffled)
+        error = empirical_error(tree, X_train_shuffled,  y_train_shuffled)
+        
         H.append(tree)
-
+        errors.append(error)
     return H
 
 
@@ -39,24 +55,29 @@ def empirical_error(tree, X, y):
     return zero_one_loss(y, y_pred)
 
 
-def replicable_learner(X_train, y_train, H, random_seed=1234):
+def replicable_learner(X_train, y_train, H,sample_size, random_seed=1234):
 
     random.seed(random_seed)
     np.random.seed(random_seed)
 
-    errors = {tree: empirical_error(tree, X_train, y_train) for tree in H}
-
+    # randomly draw a labeled sample from the full dataset
+    X_train_shuffled, y_train_shuffled = random_drawsample(
+    X_train, y_train, sample_size, random_state=random_seed)
+    
+    errors = {tree: empirical_error(tree, X_train_shuffled, y_train_shuffled) for tree in H}
     opt = min(errors.values())
+    print("OPT error",opt,"errors",errors.values())
+    
     #opt = 0  # the optimal error we can achieve is zero
     v_init = np.random.uniform(opt,opt + config.tau / 2)
-    # k = int(((config.alpha/4 - config.tau/2)*2-1)/2) + 1
+    
     k = int(((config.alpha/4 - config.tau/2)-1.5*config.tau)/config.tau) + 1
     v_candidates = [v_init + (2 * i + 1) * config.tau / 2 for i in range(k)]
     # print("k:", k, "v max candidates:", np.max(v_candidates),
     #       "v min candidates:", np.min(v_candidates))
     # print(v_candidates)
     v = random.choice(v_candidates)
-
+    print("v:", v)
     H_shuffled = shuffle(H, random_state=random_seed)
     for tree in H_shuffled:
         if errors[tree] <= v:
@@ -98,7 +119,7 @@ def load_dataset(dataset_path, sample_size=None, test_size=0.2, random_state=42)
 
     return X_train, X_test, y_train, y_test
 
-def load_dataset_no_split(dataset_path, sample_size=10000, random_state=42):
+def load_full_dataset(dataset_path, random_state=42):
     df = pd.read_csv(dataset_path)
 
     # For ease of implementation, we will only use a few features
@@ -112,7 +133,7 @@ def load_dataset_no_split(dataset_path, sample_size=10000, random_state=42):
     # X_train, X_test, y_train, y_test = train_test_split(
     #     X, y, random_state=random_state, test_size=test_size)
     X, y = shuffle(X, y, random_state=random_state)
-    return X[:sample_size], y[:sample_size]
+    return X, y
 
 if __name__ == '__main__':
 
