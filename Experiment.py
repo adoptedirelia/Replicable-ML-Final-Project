@@ -25,7 +25,7 @@ import numpy as np
 import config
 import Algorithm10 as a10
 from sklearn.tree import export_text
-
+import time
 # function to check if two decision trees are equal
 def are_trees_equal(tree1, tree2):
     # Check that both trees are fitted
@@ -60,7 +60,9 @@ def getConvergenceSampleNum(min_subset_size, max_subset_size, repeat_num, rho, s
     for sample_size in range(min_subset_size, max_subset_size + 1, sample_size_step):
         #get dataset of size sample_size by sampling from the original dataset
         replicable_tree_list = []
+        t0= time.time()
         H = a10.build_candidate_trees(X, y,sample_size, max_depth=config.max_depth, num_trees=config.num_H, random_state=config.random_seed)    
+        print(f"average build candidate trees time: {(time.time()-t0)/config.num_H}")
         for i in range(repeat_num):
             print(f"sample size: {sample_size}, repeat: {i}")
             tree = a10.replicable_learner(X, y, H, sample_size, random_seed=config.random_seed+i)
