@@ -11,7 +11,7 @@ random_seed = 42
 selected_features = ['Class','Seat comfort','Food and drink','Cleanliness','satisfaction'] 
 
 # Parameters for replicable algorithm
-rho = 0.85 # Replicability
+rho = 0.3 # Replicability
 alpha = 0.3 # Accuracy 
 beta = 0.2 # Confidence
 num_H = 10 # Number of hypotheses (model weights)

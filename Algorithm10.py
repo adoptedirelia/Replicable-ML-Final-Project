@@ -78,10 +78,13 @@ def replicable_learner(X_train, y_train, H,sample_size, random_seed=1234):
     # print(v_candidates)
     v = random.choice(v_candidates)
     print("v:", v)
-    H_shuffled = shuffle(H, random_state=random_seed)
-    for tree in H_shuffled:
+    #H_shuffled = shuffle(H, random_state=random_seed)
+    res_trees = []
+    for tree in H:
         if errors[tree] <= v:
-            return tree
+            res_trees.append(tree)
+    print("res_trees:", len(res_trees))
+    return res_trees[0]
 
     return min(errors.items(), key=lambda x: x[1])[0]
 
