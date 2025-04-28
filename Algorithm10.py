@@ -73,9 +73,9 @@ def replicable_learner(X_train, y_train, H,sample_size, random_seed=1234):
     
     k = int(((config.alpha/4 - config.tau/2)-1.5*config.tau)/config.tau) + 1
     v_candidates = [v_init + (2 * i + 1) * config.tau / 2 for i in range(k)]
-    # print("k:", k, "v max candidates:", np.max(v_candidates),
-    #       "v min candidates:", np.min(v_candidates))
-    # print(v_candidates)
+    print("k:", k, "v max candidates:", np.max(v_candidates),
+        "v min candidates:", np.min(v_candidates))
+    print(v_candidates)
     v = random.choice(v_candidates)
     print("v:", v)
     H_shuffled = shuffle(H, random_state=random_seed)
