@@ -83,8 +83,7 @@ def replicable_learner(X_train, y_train, H,sample_size, random_seed=1234):
     for tree in H:
         if errors[tree] <= v:
             res_trees.append(tree)
-    print("res_trees:", len(res_trees))
-    return res_trees[0]
+    return res_trees
 
     return min(errors.items(), key=lambda x: x[1])[0]
 
