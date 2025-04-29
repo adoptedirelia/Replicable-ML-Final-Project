@@ -97,6 +97,9 @@ def Exp(rho_start=0.05, rho_end=0.95, rho_step=0.05, sample_size_start=100, samp
     real_sample_size = []
     theoretical_sample_size = []
     rhos = []
+    alphas = []
+    betas = []
+    num_Hs = []
     for rho in np.arange(rho_start, rho_end + rho_step, rho_step):
         print(f"rho: {rho}")
         sample_size,m_up_bound = experiment(sample_size_start, sample_size_end,sample_size_step,rho)
@@ -104,12 +107,19 @@ def Exp(rho_start=0.05, rho_end=0.95, rho_step=0.05, sample_size_start=100, samp
         real_sample_size.append(sample_size)
         theoretical_sample_size.append(m_up_bound)
         rhos.append(rho)
-    result = [real_sample_size, theoretical_sample_size, rhos]
+        num_Hs.append(config.num_H)
+        alphas.append(config.alpha)
+        betas.append(config.beta)
+        
     # save the result to a csv file
     df = pd.DataFrame({
+        'rhos': rhos,
+        'alphas': alphas,
+        'betas': betas,
+        'num_Hs': num_Hs,
         'real_sample_size': real_sample_size,
         'theoretical_sample_size': theoretical_sample_size,
-        'rhos': rhos
+        
     })
     df.to_csv('sample_size_vs_rho.csv', index=False)
     print("Results saved to sample_size_vs_rho.csv")
@@ -125,14 +135,16 @@ def plot_res():
     real_sample_size = df['real_sample_size'].tolist()
     theoretical_sample_size = df['theoretical_sample_size'].tolist()
     rhos = df['rhos'].tolist()
-    
+    alphas = df['alphas'].tolist()
+    betas = df['betas'].tolist()
+    num_Hs = df['num_Hs'].tolist()
     # plot the results in logarithmic scale
     plt.figure(figsize=(10, 6))
     plt.plot(rhos, np.log(np.log(real_sample_size)), label='Real-world bound', marker='o',linewidth=4)
     plt.plot(rhos, np.log(np.log(theoretical_sample_size)), label='Theoretical bound', marker='x',linewidth=4)
     plt.xlabel(r'$\rho$')
     plt.ylabel(r'$ln(ln(m))$')
-    plt.title(r'$m$ vs. $\rho$'+'\n'+r'$\alpha$={}, $\beta$={},$|H|$={}'.format(config.alpha, config.beta, config.num_H))
+    plt.title(r'$m$ vs. $\rho$'+'\n'+r'$\alpha$={}, $\beta$={},$|H|$={}'.format(alphas[0], betas[0], num_Hs[0]))
     plt.legend()
     plt.xlim(0,1)
     plt.ylim(1.5, 3)
@@ -141,6 +153,6 @@ def plot_res():
     
 if __name__ == "__main__":
     # run the experiment
-    #Exp()
+    Exp()
     plot_res()
 
