@@ -106,7 +106,11 @@ def Exp(rho_start=0.05, rho_end=0.95, rho_step=0.05, sample_size_start=100, samp
         rhos.append(rho)
     result = [real_sample_size, theoretical_sample_size, rhos]
     # save the result to a csv file
-    df = pd.DataFrame(result, columns=['real_sample_size', 'theoretical_sample_size', 'rhos'])
+    df = pd.DataFrame({
+        'real_sample_size': real_sample_size,
+        'theoretical_sample_size': theoretical_sample_size,
+        'rhos': rhos
+    })
     df.to_csv('sample_size_vs_rho.csv', index=False)
     print("Results saved to sample_size_vs_rho.csv")
     # print the results
