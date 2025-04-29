@@ -93,7 +93,7 @@ def experiment(start_size, end_size,step,rho):
     print("not replicable at sample size: ", end_size)
     return -1,-1
 
-def Exp(rho_start=0.05, rho_end=0.95, rho_step=0.05, sample_size_start=100, sample_size_end=1000, sample_size_step=50):
+def Exp(rho_start=0.05, rho_end=0.95, rho_step=0.05, sample_size_start=100, sample_size_end=1000, sample_size_step=10):
     real_sample_size = []
     theoretical_sample_size = []
     rhos = []
