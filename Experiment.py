@@ -128,11 +128,11 @@ def plot_res():
     
     # plot the results in logarithmic scale
     plt.figure(figsize=(10, 6))
-    plt.plot(rhos, np.log(np.log(real_sample_size)), label='Realworld bound', marker='o',linewidth=4)
+    plt.plot(rhos, np.log(np.log(real_sample_size)), label='Real-world bound', marker='o',linewidth=4)
     plt.plot(rhos, np.log(np.log(theoretical_sample_size)), label='Theoretical bound', marker='x',linewidth=4)
-    plt.xlabel('Rho')
-    plt.ylabel('ln(ln(Sample size))')
-    plt.title('Sample size vs Rho')
+    plt.xlabel(r'$\rho$')
+    plt.ylabel(r'$ln(ln(m))$')
+    plt.title(r'$m$ vs. $\rho$'+'\n'+r'$\alpha$={}, $\beta$={},$|H|$={}'.format(config.alpha, config.beta, config.num_H))
     plt.legend()
     plt.xlim(0,1)
     plt.ylim(1.5, 3)
@@ -141,6 +141,6 @@ def plot_res():
     
 if __name__ == "__main__":
     # run the experiment
-    Exp()
+    #Exp()
     plot_res()
 
