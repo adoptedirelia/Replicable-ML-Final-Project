@@ -57,8 +57,8 @@ def empirical_error(tree, X, y):
 
 def replicable_learner(X_train, y_train, H,sample_size, random_seed=1234):
 
-    random.seed(random_seed)
-    np.random.seed(random_seed)
+    random.seed(config.random_seed)
+    np.random.seed(config.random_seed)
 
     # randomly draw a labeled sample from the full dataset
     X_train_shuffled, y_train_shuffled = random_drawsample(
@@ -76,16 +76,18 @@ def replicable_learner(X_train, y_train, H,sample_size, random_seed=1234):
     print("k:", k, "v max candidates:", np.max(v_candidates),
         "v min candidates:", np.min(v_candidates))
     print(v_candidates)
-    v = random.choice(v_candidates)
+    v = random.choice(v_candidates, random_state=config.random_seed)
     print("v:", v)
-    H_shuffled = shuffle(H, random_state=random_seed)
+    H_shuffled = shuffle(H, random_state=config.random_seed)
     res_trees = []
     for tree in H_shuffled:
         if errors[tree] <= v:
             res_trees.append(tree)
+    if len(res_trees) == 0:
+        res_trees.append(min(errors.items(), key=lambda x: x[1])[0])
     return res_trees
 
-    return min(errors.items(), key=lambda x: x[1])[0]
+    # return min(errors.items(), key=lambda x: x[1])[0]
 
 
 def preProcess(df):
