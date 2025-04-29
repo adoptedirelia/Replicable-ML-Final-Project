@@ -66,18 +66,18 @@ def replicable_learner(X_train, y_train, H,sample_size, random_seed=1234):
     
     errors = {tree: empirical_error(tree, X_train_shuffled, y_train_shuffled) for tree in H}
     opt = min(errors.values())
-    print("OPT error",opt,"errors",errors.values())
+    #print("OPT error",opt,"errors",errors.values())
     
     #opt = 0  # the optimal error we can achieve is zero
     v_init = np.random.uniform(opt,opt + config.tau / 2)
     
     k = int(((config.alpha/4 - config.tau/2)-1.5*config.tau)/config.tau) + 1
     v_candidates = [v_init + (2 * i + 1) * config.tau / 2 for i in range(k)]
-    print("k:", k, "v max candidates:", np.max(v_candidates),
-        "v min candidates:", np.min(v_candidates))
-    print(v_candidates)
-    v = random.choice(v_candidates, random_state=config.random_seed)
-    print("v:", v)
+    #print("k:", k, "v max candidates:", np.max(v_candidates),
+    #    "v min candidates:", np.min(v_candidates))
+    #print(v_candidates)
+    v = random.choice(v_candidates)
+    #print("v:", v)
     H_shuffled = shuffle(H, random_state=config.random_seed)
     res_trees = []
     for tree in H_shuffled:
@@ -118,8 +118,8 @@ def load_dataset(dataset_path, sample_size=None, test_size=0.2, random_state=42)
         X_train, y_train = shuffle(X_train, y_train, random_state=random_state)
         X_train = X_train[:sample_size]
         y_train = y_train[:sample_size]
-    print("Train set size:", X_train.shape[0],
-          "Test set size:", X_test.shape[0])
+    #print("Train set size:", X_train.shape[0],
+    #      "Test set size:", X_test.shape[0])
 
     return X_train, X_test, y_train, y_test
 
