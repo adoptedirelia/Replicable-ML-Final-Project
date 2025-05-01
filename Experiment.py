@@ -22,7 +22,7 @@ func experiment():
 """
 import pandas as pd
 import numpy as np
-import config
+from config import CFG
 import Algorithm10 as a10
 from sklearn.tree import export_text
 import time
@@ -54,17 +54,17 @@ def are_trees_equal(tree1, tree2):
 
     return True
 
-def getConvergenceSampleNum(min_subset_size, max_subset_size, repeat_num, rho, sample_size_step=1):
+def getConvergenceSampleNum(min_subset_size, max_subset_size, repeat_num, config, sample_size_step=1):
     sample_size_replicablity_dict = {}
     
-    X, y= a10.load_full_dataset(config.dataset_path, random_state=config.random_seed)
+    X, y= a10.load_full_dataset(config.dataset_path,config, random_state=config.random_seed)
     for sample_size in range(min_subset_size, max_subset_size + 1, sample_size_step):
         #get dataset of size sample_size by sampling from the original dataset
         replicable_tree_list = []
         H = a10.build_candidate_trees(X, y,sample_size, max_depth=config.max_depth, num_trees=config.num_H, random_state=config.random_seed)    
         for i in range(repeat_num):
             #print(f"sample size: {sample_size}, repeat: {i}")
-            res_trees = a10.replicable_learner(X, y, H, sample_size, random_seed=config.random_seed+i)
+            res_trees = a10.replicable_learner(X, y, H, sample_size, config,random_seed=config.random_seed+i)
             tree = res_trees[0]
             replicable_tree_list.append(tree)
             
@@ -80,11 +80,11 @@ def getConvergenceSampleNum(min_subset_size, max_subset_size, repeat_num, rho, s
         sample_size_replicablity_dict[sample_size] = prob
     return sample_size_replicablity_dict
 
-def experiment(start_size, end_size,step,rho):
-    config.rho = rho
+def experiment(start_size, end_size,step,config):
+
     m_up_bound =  config.get_m_up_bound(config.num_H, config.rho, config.alpha, config.beta)
     print("theoretical sample size: ",)
-    ans_dict = getConvergenceSampleNum(min_subset_size=start_size, max_subset_size=end_size, repeat_num=10, rho=config.rho, sample_size_step=step)
+    ans_dict = getConvergenceSampleNum(min_subset_size=start_size, max_subset_size=end_size, repeat_num=10, config=config, sample_size_step=step)
     for key, value in ans_dict.items():
         #print(f"sample size: {key}, prob: {value}")
         if value >= 1 - config.rho:
@@ -93,7 +93,7 @@ def experiment(start_size, end_size,step,rho):
     print("not replicable at sample size: ", end_size)
     return -1,-1
 
-def Exp(rho_start=0.05, rho_end=0.95, rho_step=0.05, sample_size_start=100, sample_size_end=1000, sample_size_step=10):
+def Exp_rho(rho_start=0.05, rho_end=0.95, rho_step=0.05, sample_size_start=100, sample_size_end=1000, sample_size_step=10):
     real_sample_size = []
     theoretical_sample_size = []
     rhos = []
@@ -102,14 +102,16 @@ def Exp(rho_start=0.05, rho_end=0.95, rho_step=0.05, sample_size_start=100, samp
     num_Hs = []
     for rho in np.arange(rho_start, rho_end + rho_step, rho_step):
         print(f"rho: {rho}")
-        sample_size,m_up_bound = experiment(sample_size_start, sample_size_end,sample_size_step,rho)
+        cfg = CFG()
+        cfg.rho = rho
+        sample_size,m_up_bound = experiment(sample_size_start, sample_size_end,sample_size_step,cfg)
         print(f"sample size: {sample_size}, m_up_bound: {m_up_bound}")
         real_sample_size.append(sample_size)
         theoretical_sample_size.append(m_up_bound)
         rhos.append(rho)
-        num_Hs.append(config.num_H)
-        alphas.append(config.alpha)
-        betas.append(config.beta)
+        num_Hs.append(cfg.num_H)
+        alphas.append(cfg.alpha)
+        betas.append(cfg.beta)
         
     # save the result to a csv file
     df = pd.DataFrame({
@@ -127,8 +129,43 @@ def Exp(rho_start=0.05, rho_end=0.95, rho_step=0.05, sample_size_start=100, samp
     print("Real Sample Size: ", real_sample_size)
     print("Theoretical Sample Size: ", theoretical_sample_size)
 
+def Exp_numH(numH_start=10, numH_end=40, numH_step=5, sample_size_start=100, sample_size_end=1000, sample_size_step=10):
+    real_sample_size = []
+    theoretical_sample_size = []
+    rhos = []
+    alphas = []
+    betas = []
+    num_Hs = []
+    for numH in range(numH_start, numH_end + numH_step, numH_step):
+        print(f"num_H: {numH}")
+        cfg = CFG()
+        cfg.num_H = numH
+        sample_size,m_up_bound = experiment(sample_size_start, sample_size_end,sample_size_step,cfg)
+        print(f"sample size: {sample_size}, m_up_bound: {m_up_bound}")
+        real_sample_size.append(sample_size)
+        theoretical_sample_size.append(m_up_bound)
+        rhos.append(cfg.rho)
+        num_Hs.append(numH)
+        alphas.append(cfg.alpha)
+        betas.append(cfg.beta)
+        
+    # save the result to a csv file
+    df = pd.DataFrame({
+        'rhos': rhos,
+        'alphas': alphas,
+        'betas': betas,
+        'num_Hs': num_Hs,
+        'real_sample_size': real_sample_size,
+        'theoretical_sample_size': theoretical_sample_size,
+        
+    })
+    df.to_csv('sample_size_vs_numH.csv', index=False)
+    print("Results saved to sample_size_vs_numH.csv")
+    # print the results
+    print("Real Sample Size: ", real_sample_size)
+    print("Theoretical Sample Size: ", theoretical_sample_size)
 
-def plot_res():
+def plot_rho():
     # load the result from the csv file
     df = pd.read_csv('sample_size_vs_rho.csv')
     # plot the results
@@ -151,8 +188,33 @@ def plot_res():
     plt.grid()
     plt.show()
     
+def plot_numH():
+    # load the result from the csv file
+    df = pd.read_csv('sample_size_vs_numH.csv')
+    # plot the results
+    real_sample_size = df['real_sample_size'].tolist()
+    theoretical_sample_size = df['theoretical_sample_size'].tolist()
+    rhos = df['rhos'].tolist()
+    alphas = df['alphas'].tolist()
+    betas = df['betas'].tolist()
+    num_Hs = df['num_Hs'].tolist()
+    # plot the results in logarithmic scale
+    plt.figure(figsize=(10, 6))
+    plt.plot(num_Hs, np.log(np.log(real_sample_size)), label='Real-world bound', marker='o',linewidth=4)
+    plt.plot(num_Hs, np.log(np.log(theoretical_sample_size)), label='Theoretical bound', marker='x',linewidth=4)
+    plt.xlabel(r'$|H|$')
+    plt.ylabel(r'$ln(ln(m))$')
+    plt.title(r'$m$ vs. $|H|$'+'\n'+r'$\alpha$={}, $\beta$={},$\rho$={}'.format(alphas[0], betas[0], rhos[0]))
+    plt.legend()
+    plt.xlim(10,40)
+    plt.ylim(1.5, 3)
+    plt.grid()
+    plt.show()
+    
 if __name__ == "__main__":
     # run the experiment
-    Exp()
-    plot_res()
+    #Exp_rho()
+    #plot_rho()
+    Exp_numH()
+    plot_numH()
 

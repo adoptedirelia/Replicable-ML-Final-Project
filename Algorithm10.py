@@ -3,7 +3,7 @@ from sklearn.tree import DecisionTreeClassifier, export_text
 from sklearn.metrics import zero_one_loss
 from sklearn.utils import shuffle
 import random
-import config
+from config import CFG
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
@@ -55,7 +55,7 @@ def empirical_error(tree, X, y):
     return zero_one_loss(y, y_pred)
 
 
-def replicable_learner(X_train, y_train, H,sample_size, random_seed=1234):
+def replicable_learner(X_train, y_train, H,sample_size,config, random_seed=1234):
 
     random.seed(config.random_seed)
     np.random.seed(config.random_seed)
@@ -101,7 +101,7 @@ def preProcess(df):
     return result
 
 
-def load_dataset(dataset_path, sample_size=None, test_size=0.2, random_state=42):
+def load_dataset(dataset_path,config, sample_size=None, test_size=0.2, random_state=42):
     df = pd.read_csv(dataset_path)
 
     # For ease of implementation, we will only use a few features
@@ -123,7 +123,7 @@ def load_dataset(dataset_path, sample_size=None, test_size=0.2, random_state=42)
 
     return X_train, X_test, y_train, y_test
 
-def load_full_dataset(dataset_path, random_state=42):
+def load_full_dataset(dataset_path,config, random_state=42):
     df = pd.read_csv(dataset_path)
 
     # For ease of implementation, we will only use a few features
@@ -140,16 +140,17 @@ def load_full_dataset(dataset_path, random_state=42):
     return X, y
 
 if __name__ == '__main__':
+    cfg = CFG()
 
     X_train, X_test, y_train, y_test = load_dataset(
-        config.dataset_path, test_size=0.2, random_state=config.random_seed)
+        cfg, test_size=0.2, random_state=cfg.random_seed)
 
-    H = build_candidate_trees(X_train, y_train, max_depth=config.max_depth,
-                              num_trees=config.num_H, random_state=config.random_seed)
+    H = build_candidate_trees(X_train, y_train, max_depth=cfg.max_depth,
+                              num_trees=cfg.num_H, random_state=cfg.random_seed)
     tree = replicable_learner(
-        X_train, y_train, H, random_seed=config.random_seed)
+        X_train, y_train, H, random_seed=cfg.random_seed)
     a = tree.score(X_test, y_test)
     print(a)
     for t in H:
-        r = export_text(t, feature_names=config.selected_features[:-1])
+        r = export_text(t, feature_names=cfg.selected_features[:-1])
         print(r)
