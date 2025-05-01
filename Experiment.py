@@ -89,7 +89,7 @@ def experiment(start_size, end_size,step,rho):
         #print(f"sample size: {key}, prob: {value}")
         if value >= 1 - config.rho:
             print(f"replicable at sample size: {key}, prob: {value}")
-            return key,m_up_bound
+            return key,m_up_bound,value
     print("not replicable at sample size: ", end_size)
     return -1,-1
 
@@ -100,9 +100,10 @@ def Exp(rho_start=0.05, rho_end=0.95, rho_step=0.05, sample_size_start=100, samp
     alphas = []
     betas = []
     num_Hs = []
+    values = []
     for rho in np.arange(rho_start, rho_end + rho_step, rho_step):
         print(f"rho: {rho}")
-        sample_size,m_up_bound = experiment(sample_size_start, sample_size_end,sample_size_step,rho)
+        sample_size,m_up_bound,value = experiment(sample_size_start, sample_size_end,sample_size_step,rho)
         print(f"sample size: {sample_size}, m_up_bound: {m_up_bound}")
         real_sample_size.append(sample_size)
         theoretical_sample_size.append(m_up_bound)
@@ -110,6 +111,7 @@ def Exp(rho_start=0.05, rho_end=0.95, rho_step=0.05, sample_size_start=100, samp
         num_Hs.append(config.num_H)
         alphas.append(config.alpha)
         betas.append(config.beta)
+        values.append(value)
         
     # save the result to a csv file
     df = pd.DataFrame({
@@ -119,6 +121,7 @@ def Exp(rho_start=0.05, rho_end=0.95, rho_step=0.05, sample_size_start=100, samp
         'num_Hs': num_Hs,
         'real_sample_size': real_sample_size,
         'theoretical_sample_size': theoretical_sample_size,
+        'values': values
         
     })
     df.to_csv('sample_size_vs_rho.csv', index=False)
