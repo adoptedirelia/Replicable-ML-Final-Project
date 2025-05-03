@@ -297,10 +297,10 @@ if __name__ == "__main__":
     #     x_label="num_H"
     # )
     # plot_sweep("sample_size_vs_numH.csv", x_key="num_H", x_label=r"$|H|$", title_prefix=r"$|H|$")
-
+    # print(np.arange(0.05, 1.0 + 0.001, 0.05))
     df = run_param_sweep(
         param_name="beta",
-        param_values=range(0.05, 1.0, 0.05),
+        param_values=np.arange(0.05, 1.0 + 0.001, 0.05),
         cfg_modifier_fn=set_beta,
         csv_filename="sample_size_vs_beta.csv",
         x_label="beta"
@@ -309,7 +309,7 @@ if __name__ == "__main__":
 
     df = run_param_sweep(
         param_name="alpha",
-        param_values=range(0.05, 1.0, 0.05),
+        param_values=np.arange(0.05, 1.0 + 0.001, 0.05),
         cfg_modifier_fn=set_alpha,
         csv_filename="sample_size_vs_alpha.csv",
         x_label="alpha"
