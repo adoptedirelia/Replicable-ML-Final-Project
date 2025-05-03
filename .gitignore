@@ -10,3 +10,5 @@ rml/
 
 # Ignore system files
 .DS_Store
+*.csv
+*.png
